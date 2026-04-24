@@ -11,11 +11,13 @@
 ## Project Location
 
 - `C:\Vue\shopping`
-- Repo not yet on GitHub
+- GitHub repo: https://github.com/RhinoCan/Shopping
+- Live app: https://rhinocan.github.io/Shopping/
 
 ## Current State
 
 - Project fully built and working as an installed PWA on an Android phone
+- Deployed to GitHub Pages and installed on phone from there (accessible from anywhere, not just home Wi-Fi)
 - `App.vue` contains the complete application — no child components
 - `HelloWorld.vue` has been deleted
 - PWA icons in place, production build tested and deployed to phone
@@ -76,9 +78,11 @@ Two keys in local storage:
 - Header font: Zilla Slab 600 (Google Fonts)
 - Body font: DM Sans 400/500 (Google Fonts)
 
-## vite.config.mts — VitePWA configuration
+## vite.config.mts — Relevant configuration
 
 ```typescript
+base: '/Shopping/',   // required for GitHub Pages deployment
+
 VitePWA({
   registerType: 'autoUpdate',
   includeAssets: ['favicon.ico'],
@@ -114,13 +118,22 @@ VitePWA({
 - This causes a TypeScript type-checker conflict: `"6.0"` is not yet a valid value for `ignoreDeprecations`, so `vue-tsc` exits with an error
 - **Workaround:** do not use `npm run build`; use `npm run build-only` instead, which skips the type-check step and runs Vite directly — this completes cleanly
 
-## Building and Deploying Updates to the Phone
+## Building and Deploying Updates
 
+`package.json` has a `deploy` script: `"deploy": "gh-pages -d dist"`
+
+`gh-pages` was installed with `--legacy-peer-deps` due to the same Vite 8 peer dependency situation.
+
+**To deploy an update:**
 1. `npm run build-only` — produces the `dist/` folder
-2. `npm run preview -- --host` — serves the production build on the local network
-3. Open the Network URL on the phone (both devices must be on the same Wi-Fi)
-4. The service worker detects the update and downloads it in the background
-5. Close the app fully on the phone (swipe away from recents) and reopen it — the update will be active
+2. `npm run deploy` — pushes `dist/` to the `gh-pages` branch on GitHub
+3. Wait a minute or two for GitHub Pages to republish
+4. Open the app on the phone — the service worker detects the update and downloads it in the background
+5. Close the app fully (swipe away from recents) and reopen — the update will be active
+
+**To test locally before deploying (optional):**
+1. `npm run preview -- --host` — serves the production build on the local network
+2. Open the Network URL on the phone (both devices must be on the same Wi-Fi)
 
 ## Export / Import (cross-device data transfer)
 
@@ -141,5 +154,3 @@ The app has Export and Import buttons. The exported `shopping-list.json` contain
 
 - If the two-row button layout in the header becomes bothersome, consider shortening button labels: "All"/"Trip" for the toggle, "Clear", "Exp", "Imp" for the others — likely enough to fit on one row
 - Alternatively, remove the "Clear Trip" button entirely; manually unchecking items at the end of a trip is a workable alternative
-- Publish to GitHub as a backup
-- Deploy to a public host (Netlify, GitHub Pages) to make the app accessible outside the home Wi-Fi network
